@@ -1,25 +1,8 @@
 from enum import Enum, auto
 import pygame as pg
-from dataclasses import dataclass
+from pygame import Surface
 from typing import Dict
-
-
-@dataclass
-class ShapeData:
-    screen: pg.Surface
-    position: tuple[float]
-    size: tuple[float]
-    color: tuple[int]
-
-
-def draw_ellipse(data: ShapeData) -> pg.Rect:
-    rect = pg.Rect(data.position, data.size)
-    pg.draw.ellipse(data.screen, data.color, rect)
-
-
-def draw_rect(data: ShapeData) -> pg.Rect:
-    rect = pg.Rect(data.position, data.size)
-    return pg.draw.rect(data.screen, data.color, rect)
+from shape import ShapeData, draw_ellipse, draw_rect
 
 
 class State(Enum):
@@ -27,7 +10,7 @@ class State(Enum):
     ACCELERATING = auto()
     SLOWING_DOWN = auto()
 
-def get_shape_data(screen, position: tuple[float], state: State) -> ShapeData:
+def get_shape_data(screen: Surface, position: tuple[float, float], state: State) -> ShapeData:
     return {    
         State.IDLE: ShapeData(screen, position, (80, 80), (0, 0, 255)),
         State.ACCELERATING: ShapeData(screen, position, (80, 60), (255, 0, 0)),
@@ -73,4 +56,3 @@ class FSM:
     def update(self, shape_data: ShapeData) -> pg.Rect:
         assert isinstance(self.state, State), f"FSM corrupted: {self.state!r}"
         return DRAW_MAP[self.state](shape_data)
-

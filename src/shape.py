@@ -2,7 +2,7 @@ import pygame as pg
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class ShapeData:
     position: tuple[float, float]
     size: tuple[float, float]
@@ -12,16 +12,16 @@ class ShapeData:
 def draw_ellipse(
         *,
         screen: pg.Surface, 
-        data: ShapeData
-    ) -> pg.Rect:
-    rect = pg.Rect(data.position, data.size)
-    return pg.draw.ellipse(screen, data.color, rect)
+        shape: ShapeData
+    ):
+    rect = pg.Rect(shape.position, shape.size)
+    pg.draw.ellipse(screen, shape.color, rect)
 
 
 def draw_rect(
         *,
         screen: pg.Surface,
-        data: ShapeData
-    ) -> pg.Rect:
-    rect = pg.Rect(data.position, data.size)
-    return pg.draw.rect(screen, data.color, rect)
+        shape: ShapeData
+    ):
+    rect = pg.Rect(shape.position, shape.size)
+    pg.draw.rect(screen, shape.color, rect)

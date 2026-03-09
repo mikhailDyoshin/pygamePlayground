@@ -2,6 +2,7 @@ from dataclasses import dataclass, replace
 from pygame import Vector2, Surface, draw, Rect
 from moving_dot import get_velocity, get_position, screen_wrap
 from utils import ZERO_VECTOR, screen_center, random_color_rgb, limit_vector
+from steer import steer
 
 
 @dataclass(frozen=True)
@@ -20,9 +21,22 @@ class MovingObject:
     size: Size
     color: tuple[int, int, int]
 
-    def _get_kinematics(self, screen: Surface, dt: float) -> Kinematics:
-        velocity = get_velocity(v0=self.kinematics.velocity, max_projection=10)
-        limited_velocity = limit_vector(velocity, 300)
+    def _get_kinematics(self, *, screen: Surface,  dt: float, target: Vector2 | None = None) -> Kinematics:
+        if target:
+            steering_velocity = self.kinematics.velocity + steer(
+                velocity=self.kinematics.velocity, 
+                position=self.kinematics.position,
+                target=target,
+                max_speed=200
+            )
+            # print(f'Steering: {steering_velocity.magnitude()}')
+        else:
+            steering_velocity = self.kinematics.velocity
+            # print(f'Not Steering: {steering_velocity.magnitude()}')
+
+        velocity_with_noise = get_velocity(v0=steering_velocity, max_projection=100)
+
+        limited_velocity = limit_vector(velocity_with_noise, 300)
         position = screen_wrap(
             position=get_position(s0=self.kinematics.position, v=limited_velocity, dt=dt), 
             width=screen.get_width(),
@@ -33,11 +47,18 @@ class MovingObject:
             position=position
         )
     
-    def update_kinematics(self, screen: Surface, dt: float) -> 'MovingObject':
-        return replace(self, kinematics=self._get_kinematics(screen, dt))
+    def update_kinematics(self, *, screen: Surface,  dt: float, target: Vector2 | None = None) -> 'MovingObject':
+        return replace(
+            self, 
+            kinematics=self._get_kinematics(
+                screen=screen, 
+                target=target, 
+                dt=dt
+            )
+        )
     
-def update_objects(objects: tuple[MovingObject, ...], screen: Surface, dt: float) -> tuple[MovingObject, ...]:
-    return tuple([mv.update_kinematics(screen, dt) for mv in objects])
+def update_objects(objects: tuple[MovingObject, ...], screen: Surface, dt: float, target: Vector2 | None = None,) -> tuple[MovingObject, ...]:
+    return tuple([mv.update_kinematics(screen=screen, dt=dt, target=target) for mv in objects])
 
 def draw_ellipse(
         *,
@@ -53,11 +74,11 @@ def display_objects(objects: tuple[MovingObject, ...], screen: Surface) -> None:
         draw_ellipse(screen=screen, obj=obj)
 
 
-def initiate_dots(number: int, screen: Surface) -> tuple[MovingObject, ...]:
+def initiate_dots(number: int, size: Size, screen: Surface) -> tuple[MovingObject, ...]:
     return tuple([
             MovingObject(
                 kinematics=Kinematics(velocity=ZERO_VECTOR, position=screen_center(screen)),
-                size=Size(4, 4), 
+                size=size, 
                 color=random_color_rgb()
             ) 
             for _ in range(number)]

@@ -1,13 +1,28 @@
 # Example file showing a circle moving on screen
 import pygame
-from moving_object import MovingObject, Size, update_objects, display_objects, initiate_dots
+from moving_object import (
+    MovingObject,
+    Size,
+    update_objects,
+    display_objects,
+    initiate_dots,
+)
 from periodic_printer import PeriodicPrinter
+from find_neighbours import find_neighbours, radius_rule
+from utils import random_color_rgb
+from functools import partial
 
-DOT_SIZE = Size(1, 1)
 
-# printer = PeriodicPrinter(interval=1)
+DIMENSION = 20
+DOT_SIZE = Size(DIMENSION, DIMENSION)
+DOTS_NUMBER = 7
+printer = PeriodicPrinter(interval_sec=1)
+
 
 def main():
+    v = pygame.Vector2(2, 0)
+    print(v)
+    print(v.magnitude())
 
     # pygame setup
     pygame.init()
@@ -17,9 +32,9 @@ def main():
     running = True
     dt = 0
 
-    dots: tuple[MovingObject, ...] = initiate_dots(number=1000, size=DOT_SIZE, screen=screen)
-
-    
+    dots: dict[str, MovingObject] = initiate_dots(
+        number=DOTS_NUMBER, size=DOT_SIZE, screen=screen
+    )
 
     while running:
         # poll for events
@@ -34,19 +49,14 @@ def main():
             if event.type == pygame.MOUSEMOTION:
                 mouse_position = event.pos
 
-        
         screen.fill("black")
 
-        
-            
-        
         dots = update_objects(dots, screen, dt, mouse_position)
 
-        # if mouse_position:
-        #     printer.update(dt, f"Steering: {dots[0].kinematics.velocity.magnitude()}")
-        # else:
-        #     printer.update(dt, f"Not Steering: {dots[0].kinematics.velocity.magnitude()}")
-
+        for d in dots:
+            ns = find_neighbours(dots[d], dots, partial(radius_rule, radius=50))
+            for key, n in ns.items():
+                dots[key] = n.update_color(random_color_rgb())
 
         display_objects(dots, screen=screen)
 
@@ -61,4 +71,5 @@ def main():
     pygame.quit()
 
 
-if __name__ == '__main__': main()
+if __name__ == "__main__":
+    main()

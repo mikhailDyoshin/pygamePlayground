@@ -57,8 +57,16 @@ class MovingObject:
             )
         )
     
-def update_objects(objects: tuple[MovingObject, ...], screen: Surface, dt: float, target: Vector2 | None = None,) -> tuple[MovingObject, ...]:
-    return tuple([mv.update_kinematics(screen=screen, dt=dt, target=target) for mv in objects])
+    def update_color(self, color: tuple[int, int, int]) -> 'MovingObject':
+        return replace(self, color=color)
+    
+def update_objects(
+        objects: dict[str, MovingObject], 
+        screen: Surface, 
+        dt: float, 
+        target: Vector2 | None = None
+    ) -> dict[str, MovingObject]:
+    return {key: mv.update_kinematics(screen=screen, dt=dt, target=target) for key, mv in objects.items()}
 
 def draw_ellipse(
         *,
@@ -69,17 +77,18 @@ def draw_ellipse(
     draw.ellipse(screen, obj.color, rect)
 
 
-def display_objects(objects: tuple[MovingObject, ...], screen: Surface) -> None:
-    for obj in objects:
+def display_objects(objects: dict[str, MovingObject], screen: Surface) -> None:
+    for obj in objects.values():
         draw_ellipse(screen=screen, obj=obj)
 
 
-def initiate_dots(number: int, size: Size, screen: Surface) -> tuple[MovingObject, ...]:
-    return tuple([
-            MovingObject(
+def initiate_dots(number: int, size: Size, screen: Surface) -> dict[str, MovingObject]:
+    return {
+            str(n): MovingObject(
                 kinematics=Kinematics(velocity=ZERO_VECTOR, position=screen_center(screen)),
                 size=size, 
                 color=random_color_rgb()
             ) 
-            for _ in range(number)]
-        )
+            for n in range(number)
+        }
+    

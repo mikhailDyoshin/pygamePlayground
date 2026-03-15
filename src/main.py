@@ -1,17 +1,18 @@
 # Example file showing a circle moving on screen
-import pygame
+from functools import partial
+
+import pygame  # type: ignore
+
+from find_neighbours import find_neighbours, radius_rule
 from moving_object import (
     MovingObject,
     Size,
-    update_objects,
     display_objects,
     initiate_dots,
+    update_objects,
 )
 from periodic_printer import PeriodicPrinter
-from find_neighbours import find_neighbours, radius_rule
 from utils import random_color_rgb
-from functools import partial
-
 
 DIMENSION = 20
 DOT_SIZE = Size(DIMENSION, DIMENSION)

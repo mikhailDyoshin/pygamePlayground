@@ -1,7 +1,9 @@
 from enum import Enum, auto
+from typing import Dict
+
 import pygame as pg
 from pygame import Surface
-from typing import Dict
+
 from shape import ShapeData, draw_ellipse, draw_rect
 
 
@@ -10,11 +12,14 @@ class State(Enum):
     ACCELERATING = auto()
     SLOWING_DOWN = auto()
 
-def get_shape_data(screen: Surface, position: tuple[float, float], state: State) -> ShapeData:
-    return {    
+
+def get_shape_data(
+    screen: Surface, position: tuple[float, float], state: State
+) -> ShapeData:
+    return {
         State.IDLE: ShapeData(screen, position, (80, 80), (0, 0, 255)),
         State.ACCELERATING: ShapeData(screen, position, (80, 60), (255, 0, 0)),
-        State.SLOWING_DOWN: ShapeData(screen, position, (80, 80), (0, 255, 0))
+        State.SLOWING_DOWN: ShapeData(screen, position, (80, 80), (0, 255, 0)),
     }[state]
 
 
@@ -31,7 +36,7 @@ class Event(Enum):
     STOP = auto()
 
 
-TRANSITIONS: Dict[State, Dict[Event, State]]  = {
+TRANSITIONS: Dict[State, Dict[Event, State]] = {
     State.IDLE: {
         Event.ACCELERATE: State.ACCELERATING,
     },

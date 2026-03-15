@@ -8,4 +8,3 @@ class PeriodicPrinter:
         if self.timer >= self.interval_sec:
             print(message)
             self.timer -= self.interval_sec
-

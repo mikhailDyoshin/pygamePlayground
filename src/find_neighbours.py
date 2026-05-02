@@ -1,6 +1,7 @@
 # from pygame import Vector2
-from moving_object import MovingObject
 from typing import Callable
+
+from moving_object import MovingObject
 
 type FindNeighbourRule = Callable[..., bool]
 

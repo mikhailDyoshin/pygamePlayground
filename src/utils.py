@@ -1,6 +1,7 @@
-from random import randint
-from pygame import Vector2, Surface
 from copy import copy
+from random import randint
+
+from pygame import Surface, Vector2
 
 ZERO_VECTOR = Vector2(0, 0)
 

@@ -55,8 +55,15 @@ def main():
         dots = update_objects(dots, screen, dt, mouse_position)
 
         for d in dots:
-            ns = find_neighbours(dots[d], dots, partial(radius_rule, radius=50))
-            for key, n in ns.items():
+            ns_distance = find_neighbours(
+                dots[d], dots, partial(radius_rule, radius=100)
+            )
+            ns_color = find_neighbours(dots[d], dots, partial(radius_rule, radius=120))
+            for key, n in ns_distance.items():
+                dots[key] = n.update_kinematics(
+                    screen=screen, dt=dt, target=-n.kinematics.velocity
+                )
+            for key, n in ns_color.items():
                 dots[key] = n.update_color(random_color_rgb())
 
         display_objects(dots, screen=screen)

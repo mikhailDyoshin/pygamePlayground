@@ -16,4 +16,4 @@ def steer(*, velocity: Vector2, position: Vector2, target: Vector2, max_speed: f
 
     desired_direction = get_target_direction(current_position=position, target=target)
     steer = desired_direction.normalize() * max_speed - velocity
-    return steer + random_vector(300)
+    return steer + random_vector(50)

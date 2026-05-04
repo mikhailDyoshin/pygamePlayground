@@ -33,12 +33,10 @@ class MovingObject:
                 velocity=self.kinematics.velocity,
                 position=self.kinematics.position,
                 target=target,
-                max_speed=200,
+                max_speed=250,
             )
-            # print(f'Steering: {steering_velocity.magnitude()}')
         else:
             steering_velocity = self.kinematics.velocity
-            # print(f'Not Steering: {steering_velocity.magnitude()}')
 
         velocity_with_noise = get_velocity(v0=steering_velocity, max_projection=100)
 

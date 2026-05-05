@@ -10,7 +10,7 @@ class World:
         self.creatures: list[Creature] = []
         self.food: list[Food] = []
 
-        for _ in range(20):
+        for _ in range(3):
             self.creatures.append(Creature(w, h))
 
         for _ in range(50):

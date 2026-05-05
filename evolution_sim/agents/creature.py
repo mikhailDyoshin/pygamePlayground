@@ -2,39 +2,54 @@ import random
 
 from pygame import Vector2
 
+LINE_TIMER = 100
+SPEED = random.uniform(2, 4)
+
 
 def screen_wrap(
-    position: Vector2, screen_width: float, screen_height: float
+    position: Vector2,
+    screen_width: float,
+    screen_height: float,
 ) -> Vector2:
 
     if position.x > screen_width:
-        return Vector2(0, position.y)
-
-    if position.x < 0:
         return Vector2(screen_width, position.y)
 
+    if position.x < 0:
+        return Vector2(0, position.y)
+
     if position.y > screen_height:
-        return Vector2(position.x, 0)
+        return Vector2(position.x, screen_height)
 
     if position.y < 0:
-        return Vector2(position.x, screen_height)
+        return Vector2(position.x, 0)
 
     return position
 
 
 class Creature:
     def __init__(self, w, h):
-        self.x = random.randint(0, w)
-        self.y = random.randint(0, h)
-        self.coord = Vector2(self.x, self.y)
+        self._x = random.randint(0, w)
+        self._y = random.randint(0, h)
+        self.coord = Vector2(self._x, self._y)
 
         self.vx = random.uniform(-1, 1)
         self.vy = random.uniform(-1, 1)
         self.velocity = Vector2(self.vx, self.vy)
 
         self.energy = 100
-        self.speed = random.uniform(1, 2)
+        self.speed = SPEED
         self.vision = 80
+
+        self.color = (
+            random.randint(50, 255),
+            random.randint(50, 255),
+            random.randint(50, 255),
+        )
+
+        self.child = None
+        self.line_timer = LINE_TIMER
+        # self.age = 0
 
         self.dead = False
 
@@ -47,6 +62,11 @@ class Creature:
             self.dead = True
             return
 
+        # self.age += 0.1
+        # if self.age >= 300:
+        #     self.dead = True
+        #     return
+
         # 1. find nearest food
         target = self.find_food(world.food)
 
@@ -55,10 +75,18 @@ class Creature:
         else:
             self.velocity += self.wander()
 
+        if self.child:
+            self.line_timer -= 1
+
+        if self.line_timer <= 0:
+            self.child = None
+            self.line_timer = LINE_TIMER
+
         self.coord += self.velocity * self.speed
         self.coord = screen_wrap(self.coord, world.w, world.h)
 
         self.eat(world)
+        self.reproduce(world)
 
     def find_food(self, food_list):
         closest = None
@@ -85,3 +113,31 @@ class Creature:
                 self.energy += f.energy
                 world.food.remove(f)
                 break
+
+    def reproduce(self, world):
+        if self.energy > 200 and random.random() < 0.02:
+            self.energy /= 2
+            self.spawn_child(world)
+
+    def spawn_child(self, world):
+        child = Creature(world.w, world.h)
+
+        child.speed = self.speed + random.uniform(-0.1, 0.1)
+        child.vision = self.vision + random.uniform(-5, 5)
+
+        child.coord = Vector2(self.coord.x, self.coord.y)
+        child.color = self.mutate_color()
+        self.child = child
+        world.creatures.append(child)
+
+    def mutate_color(self, mutation_strength: int = 15):
+        r, g, b = self.color
+
+        def clamp(x):
+            return max(0, min(255, x))
+
+        return (
+            clamp(r + random.randint(-mutation_strength, mutation_strength)),
+            clamp(g + random.randint(-mutation_strength, mutation_strength)),
+            clamp(b + random.randint(-mutation_strength, mutation_strength)),
+        )

@@ -8,4 +8,4 @@ class Food:
         self._x = random.randint(0, w)
         self._y = random.randint(0, h)
         self.coord = Vector2(self._x, self._y)
-        self.energy = 20
+        self.energy = 10

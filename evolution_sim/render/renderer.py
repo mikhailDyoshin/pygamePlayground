@@ -10,6 +10,14 @@ class Renderer:
 
     def draw(self, world: World):
         self.screen.fill((10, 10, 20))
+        avg_speed = sum(c.speed for c in world.creatures) / len(world.creatures)
+        avg_vision = sum(c.vision for c in world.creatures) / len(world.creatures)
+        strings = (
+            f"Population: {len(world.creatures)}",
+            f"Food: {len(world.food)}",
+            f"Average speed: {avg_speed}",
+            f"Average vision: {avg_vision}",
+        )
 
         # food
         for f in world.food:
@@ -23,11 +31,10 @@ class Renderer:
                 self.screen, c.color, (int(c.coord.x), int(c.coord.y)), 5
             )
             if c.child:
-                # print(f"Parent: {c.coord}, Child: {c.child.coord}")
                 pygame.draw.line(self.screen, (255, 255, 255), c.coord, c.child.coord)
 
-        self._draw_creatures_number(str(len(world.creatures)), (10, 10))
-        self._draw_creatures_number(str(len(world.food)), (10, 30))
+        for i, s in enumerate(strings):
+            self._draw_text(s, (10, 10 + i * 20))
 
     def _draw_creatures_number(self, creatures_number: str, placement: tuple[int, int]):
         self._draw_text(creatures_number, placement)

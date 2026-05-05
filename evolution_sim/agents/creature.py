@@ -58,6 +58,9 @@ class Creature:
             return
 
         self.energy -= 0.1
+        self.energy -= 0.001 * self.vision
+        self.energy -= 0.001 * self.speed
+
         if self.energy <= 0:
             self.dead = True
             return
@@ -122,8 +125,8 @@ class Creature:
     def spawn_child(self, world):
         child = Creature(world.w, world.h)
 
-        child.speed = self.speed + random.uniform(-0.1, 0.1)
-        child.vision = self.vision + random.uniform(-5, 5)
+        child.speed = max(0.1, self.speed + random.uniform(-0.2, 0.2))
+        child.vision = max(10, self.vision + random.uniform(-10, 10))
 
         child.coord = Vector2(self.coord.x, self.coord.y)
         child.color = self.mutate_color()

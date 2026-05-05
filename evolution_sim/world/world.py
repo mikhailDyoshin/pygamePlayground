@@ -13,7 +13,7 @@ class World:
         for _ in range(3):
             self.creatures.append(Creature(w, h))
 
-        for _ in range(50):
+        for _ in range(30):
             self.food.append(Food(w, h))
 
     def update(self):

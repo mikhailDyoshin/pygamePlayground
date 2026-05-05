@@ -3,26 +3,48 @@ import random
 from pygame import Vector2
 
 LINE_TIMER = 100
-SPEED = random.uniform(2, 4)
+SPEED_COST = 0.002
+VISION_COST = 0.00005
 
 
-def screen_wrap(
+def screen_border(
+    position: Vector2,
+    screen_width: float,
+    screen_height: float,
+) -> Vector2:
+
+    if position.x >= screen_width:
+        return Vector2(screen_width - 1, position.y)
+
+    if position.x <= 0:
+        return Vector2(1, position.y)
+
+    if position.y >= screen_height:
+        return Vector2(position.x, screen_height - 1)
+
+    if position.y <= 0:
+        return Vector2(position.x, 1)
+
+    return position
+
+
+def screen_teleport(
     position: Vector2,
     screen_width: float,
     screen_height: float,
 ) -> Vector2:
 
     if position.x > screen_width:
-        return Vector2(screen_width, position.y)
-
-    if position.x < 0:
         return Vector2(0, position.y)
 
+    if position.x < 0:
+        return Vector2(screen_width, position.y)
+
     if position.y > screen_height:
-        return Vector2(position.x, screen_height)
+        return Vector2(position.x, 0)
 
     if position.y < 0:
-        return Vector2(position.x, 0)
+        return Vector2(position.x, screen_height)
 
     return position
 
@@ -38,8 +60,9 @@ class Creature:
         self.velocity = Vector2(self.vx, self.vy)
 
         self.energy = 100
-        self.speed = SPEED
-        self.vision = 80
+        self.speed = random.uniform(2, 3)
+
+        self.vision = random.uniform(90, 100)
 
         self.color = (
             random.randint(50, 255),
@@ -58,8 +81,8 @@ class Creature:
             return
 
         self.energy -= 0.1
-        self.energy -= 0.001 * self.vision
-        self.energy -= 0.001 * self.speed
+        self.energy -= VISION_COST * self.vision
+        self.energy -= SPEED_COST * self.speed
 
         if self.energy <= 0:
             self.dead = True
@@ -86,7 +109,7 @@ class Creature:
             self.line_timer = LINE_TIMER
 
         self.coord += self.velocity * self.speed
-        self.coord = screen_wrap(self.coord, world.w, world.h)
+        self.coord = screen_teleport(self.coord, world.w, world.h)
 
         self.eat(world)
         self.reproduce(world)

@@ -7,8 +7,8 @@ class World:
         self.w = w
         self.h = h
 
-        self.creatures = []
-        self.food = []
+        self.creatures: list[Creature] = []
+        self.food: list[Food] = []
 
         for _ in range(20):
             self.creatures.append(Creature(w, h))

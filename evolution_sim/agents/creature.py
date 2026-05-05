@@ -1,14 +1,36 @@
-import math
 import random
+
+from pygame import Vector2
+
+
+def screen_wrap(
+    position: Vector2, screen_width: float, screen_height: float
+) -> Vector2:
+
+    if position.x > screen_width:
+        return Vector2(0, position.y)
+
+    if position.x < 0:
+        return Vector2(screen_width, position.y)
+
+    if position.y > screen_height:
+        return Vector2(position.x, 0)
+
+    if position.y < 0:
+        return Vector2(position.x, screen_height)
+
+    return position
 
 
 class Creature:
     def __init__(self, w, h):
         self.x = random.randint(0, w)
         self.y = random.randint(0, h)
+        self.coord = Vector2(self.x, self.y)
 
         self.vx = random.uniform(-1, 1)
         self.vy = random.uniform(-1, 1)
+        self.velocity = Vector2(self.vx, self.vy)
 
         self.energy = 100
         self.speed = random.uniform(1, 2)
@@ -29,12 +51,12 @@ class Creature:
         target = self.find_food(world.food)
 
         if target:
-            self.move_towards(target.x, target.y)
+            self.velocity = self.move_towards(target.coord)
         else:
-            self.wander()
+            self.velocity += self.wander()
 
-        self.x += self.vx * self.speed
-        self.y += self.vy * self.speed
+        self.coord += self.velocity * self.speed
+        self.coord = screen_wrap(self.coord, world.w, world.h)
 
         self.eat(world)
 
@@ -43,28 +65,23 @@ class Creature:
         closest_dist = float("inf")
 
         for f in food_list:
-            d = (self.x - f.x) ** 2 + (self.y - f.y) ** 2
+            d = self.coord.distance_squared_to(f.coord)
             if d < self.vision**2 and d < closest_dist:
                 closest = f
                 closest_dist = d
 
         return closest
 
-    def move_towards(self, tx, ty):
-        dx = tx - self.x
-        dy = ty - self.y
-        dist = math.sqrt(dx * dx + dy * dy) + 0.0001
-
-        self.vx = dx / dist
-        self.vy = dy / dist
+    def move_towards(self, target):
+        direction = (target - self.coord).normalize()
+        return direction
 
     def wander(self):
-        self.vx += random.uniform(-0.2, 0.2)
-        self.vy += random.uniform(-0.2, 0.2)
+        return Vector2(random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2))
 
     def eat(self, world):
         for f in world.food:
-            if abs(self.x - f.x) < 5 and abs(self.y - f.y) < 5:
+            if self.coord.distance_to(f.coord) < 5:
                 self.energy += f.energy
                 world.food.remove(f)
                 break

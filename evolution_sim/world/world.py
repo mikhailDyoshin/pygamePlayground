@@ -1,7 +1,7 @@
 from evolution_sim.agents.creature import Creature, SPEED_COST, VISION_COST
 from evolution_sim.world.food import Food
 
-FOOD_NUMBER = 10
+FOOD_NUMBER = 20
 CREATURES_NUMBER = 10
 
 

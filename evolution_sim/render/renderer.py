@@ -1,5 +1,5 @@
 import pygame
-from world.world import World
+from evolution_sim.world.world import World
 
 
 class Renderer:
@@ -9,24 +9,12 @@ class Renderer:
 
     def draw(self, world: World):
         self.screen.fill((10, 10, 20))
-        creatures_number = len(world.creatures)
-
-        avg_speed = (
-            sum(c.speed for c in world.creatures) / creatures_number
-            if creatures_number != 0
-            else 0
-        )
-        avg_vision = (
-            sum(c.vision for c in world.creatures) / creatures_number
-            if creatures_number != 0
-            else 0
-        )
 
         strings = (
             f"Population: {len(world.creatures)}",
             f"Food: {len(world.food)}",
-            f"Average speed: {avg_speed}",
-            f"Average vision: {avg_vision}",
+            f"Average speed: {world.avg_speed}",
+            f"Average vision: {world.avg_vision}",
         )
 
         # food

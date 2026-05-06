@@ -1,5 +1,5 @@
-from agents.creature import Creature
-from world.food import Food
+from evolution_sim.agents.creature import Creature
+from evolution_sim.world.food import Food
 
 FOOD_NUMBER = 10
 CREATURES_NUMBER = 10
@@ -19,6 +19,10 @@ class World:
         for _ in range(FOOD_NUMBER):
             self.food.append(Food(w, h))
 
+        self.avg_speed = 0
+        self.avg_vision = 0
+        self.population = len(self.creatures)
+
     def update(self):
         # food update (static for now)
         for c in self.creatures:
@@ -30,3 +34,16 @@ class World:
         # slowly respawn food
         if len(self.food) < FOOD_NUMBER:
             self.food.append(Food(self.w, self.h))
+
+        self.avg_speed = (
+            sum(c.speed for c in self.creatures) / self.population
+            if self.population != 0
+            else 0
+        )
+        self.avg_vision = (
+            sum(c.vision for c in self.creatures) / self.population
+            if self.population != 0
+            else 0
+        )
+
+        self.population = len(self.creatures)

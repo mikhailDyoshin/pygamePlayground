@@ -1,3 +1,5 @@
 __pycache__/
 .venv/
 .*-ls_*
+data.txt
+*.png

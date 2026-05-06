@@ -5,16 +5,18 @@ from evolution_sim.world.world import World
 class Renderer:
     def __init__(self, screen):
         self.screen = screen
-        self.font = pygame.font.SysFont(None, 24)
+        self.font = pygame.font.SysFont(None, 16)
 
     def draw(self, world: World):
         self.screen.fill((10, 10, 20))
 
         strings = (
-            f"Population: {len(world.creatures)}",
-            f"Food: {len(world.food)}",
-            f"Average speed: {world.avg_speed}",
-            f"Average vision: {world.avg_vision}",
+            f"P: {len(world.creatures)}",
+            f"F: {len(world.food)}",
+            f"AS: {round(world.avg_speed, 3)}",
+            f"AV: {round(world.avg_vision, 3)}",
+            f"ASC: {round(world.avg_speed_cost, 3)}",
+            f"AVC: {round(world.avg_vision_cost, 3)}",
         )
 
         # food

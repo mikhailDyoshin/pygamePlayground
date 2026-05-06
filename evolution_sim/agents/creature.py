@@ -3,8 +3,8 @@ import random
 from pygame import Vector2
 
 LINE_TIMER = 100
-SPEED_COST = 0.002
-VISION_COST = 0.00005
+SPEED_COST = 0.008
+VISION_COST = 0.00004
 
 
 def screen_border(
@@ -152,7 +152,7 @@ class Creature:
         child.vision = max(10, self.vision + random.uniform(-10, 10))
 
         child.coord = Vector2(self.coord.x, self.coord.y)
-        child.color = self.mutate_color()
+        child.color = self.color
         self.child = child
         world.creatures.append(child)
 

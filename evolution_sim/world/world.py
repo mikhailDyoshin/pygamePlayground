@@ -1,4 +1,4 @@
-from evolution_sim.agents.creature import Creature
+from evolution_sim.agents.creature import Creature, SPEED_COST, VISION_COST
 from evolution_sim.world.food import Food
 
 FOOD_NUMBER = 10
@@ -20,7 +20,9 @@ class World:
             self.food.append(Food(w, h))
 
         self.avg_speed = 0
+        self.avg_speed_cost = 0
         self.avg_vision = 0
+        self.avg_vision_cost = 0
         self.population = len(self.creatures)
 
     def update(self):
@@ -30,6 +32,7 @@ class World:
 
         # cleanup dead creatures
         self.creatures = [c for c in self.creatures if not c.dead]
+        self.population = len(self.creatures)
 
         # slowly respawn food
         if len(self.food) < FOOD_NUMBER:
@@ -45,5 +48,5 @@ class World:
             if self.population != 0
             else 0
         )
-
-        self.population = len(self.creatures)
+        self.avg_speed_cost = self.avg_speed * SPEED_COST
+        self.avg_vision_cost = self.avg_vision * VISION_COST

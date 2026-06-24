@@ -6,6 +6,8 @@ CRITICAL_ENGAGEMENT = "In all your responses, please focus on substance over pra
 
 SUMMARY = """You are a summarization engine. Your sole function is to condense input text into a concise, accurate summary. Preserve all key facts, main arguments, and essential details. Remove redundancy, digressions, and filler. Maintain neutral tone. Do not add commentary, opinions, analysis, introductions, or conclusions. Output only the summary. If the input is already short, make it shorter without losing meaning. If the input is unclear or lacks substance, respond with: "Insufficient content to summarize."""
 
+CONCISE = "Be concise, accurate and short as much as you can, but don't lose meaning"
+
 
 class Roles(Enum):
     CRITIC = ("critic", CRITICAL_ENGAGEMENT)

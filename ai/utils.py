@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
+from pathlib import Path
 from typing import Iterator
 
 from ollama import (
@@ -10,6 +11,7 @@ from ollama import (
     chat,
     web_search,
 )
+from pydantic.json_schema import JsonSchemaValue
 
 
 @dataclass(frozen=True)
@@ -20,12 +22,7 @@ class ChatResponseMetadata:
     total_duration_in_sec: str
 
     def __str__(self) -> str:
-        return f"""\n
-        {self.model}
-        {self.input_tokens}
-        {self.output_tokens}
-        {self.total_duration_in_sec}
-        """
+        return "\n\n" + "\n".join([getattr(self, f.name) for f in fields(self)])
 
 
 def chat_response_metadata(response: ChatResponse) -> ChatResponseMetadata:
@@ -87,12 +84,16 @@ def run_model_as_stream(
 
 
 def get_response(
-    model: str, user_input: str, options: Options = Options()
+    model: str,
+    user_input: str,
+    format: JsonSchemaValue | None = None,
+    options: Options = Options(),
 ) -> ChatResponse:
     return chat(
         model=model,
         messages=[Message(role="user", content=user_input)],
         think=False,
+        format=format,
         options=options,
     )
 
@@ -102,6 +103,12 @@ def search(input: str) -> str:
     return "\n".join([r.get("content", "") for r in response.get("results", [])])
 
 
-def write_to_file(content: str):
-    with open("document.md", "w", encoding="utf-8") as file:
+def write_to_file(file_name: str, content: str, folder_path: Path = Path("")):
+    with open(folder_path / f"{file_name}.md", "w", encoding="utf-8") as file:
         file.write(content)
+
+
+def get_file_contents(file_path: Path) -> str:
+    """Reads a file and returns its contents as a single string."""
+    with open(file_path, "r", encoding="utf-8") as file:
+        return file.read()
